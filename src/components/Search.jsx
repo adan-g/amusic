@@ -1,26 +1,24 @@
 import { useState, useEffect } from "react";
-import { RiPlayFill } from "react-icons/ri";
-import { useFetch } from "../hooks/useFetch"
+import PlayButton from "./PlayButton";
 
 const Search = () => {
   const [search, setSearch] = useState('')
   const [data, setData] = useState(null)
-  const APIKEY = 'a976921a4acf4c6dbfaff3b69adac2a3'
+  const urlweb = 'https://deezerdevs-deezer.p.rapidapi.com/search?q='
 
 
   const options = {
     method: 'GET',
     headers: {
-      'X-RapidAPI-Key': '7398ff31cemshbe5ebe60c38bfebp147963jsnf768472a7f8b',
-      'X-RapidAPI-Host': 'deezerdevs-deezer.p.rapidapi.com'
+      'X-RapidAPI-Key': import.meta.env.VITE_RAPIDAPI_KEY,
+      'X-RapidAPI-Host': import.meta.env.VITE_RAPIDAPI_HOST
     }
   };
 
   useEffect(() => {
-    fetch(`https://deezerdevs-deezer.p.rapidapi.com/search?q=${search}`, options)
+    fetch(`${urlweb}${search}`, options)
       .then((response) => response.json())
       .then((data) => setData(data.data))
-    console.log(data)
   }, [search])
 
   //search function
@@ -41,13 +39,16 @@ const Search = () => {
       <div className='mb-14 mt-10'>
         {
           data?.map((song) => (
-            <a className="flex items-center justify-between p-2">
+            <a
+              key={song.id}
+              className="flex items-center justify-between p-2 cursor-pointer"
+            >
               <div className="flex items-center gap-5">
-                <img src={song.album.cover_small} />
-                <p key={song.id}>{song.title}</p>
+                <img src={song.album.cover_small} alt={song.title} />
+                <p>{song.title}</p>
               </div>
               <div>
-                <RiPlayFill className='text-2xl'/>
+                <PlayButton id={song.id} />
               </div>
             </a>
           ))

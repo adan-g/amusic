@@ -1,21 +1,30 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RiPlayCircleFill } from "react-icons/ri";
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 import { RiArrowRightDoubleLine } from "react-icons/ri";
 import { RiPauseCircleFill } from "react-icons/ri";
+import { usePlayerStore } from "../hooks/playerStore";
 
 const Player = () => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentSong, setCurrentSong] = useState(null)
+  const { currentMusic, isPlaying, setIsPlaying } = usePlayerStore(state => state)
   const audioRef = useRef()
 
-  const handleClick = () => {
-    if (isPlaying) {
-      audioRef.current.pause()
-    } else {
-      audioRef.current.src = `https://cdns-preview-9.dzcdn.net/stream/c-9bda0ec5904a809aa0c10f4d7a58a394-2.mp3`
+  useEffect(() => {
+    isPlaying
+      ? audioRef.current.play()
+      : audioRef.current.pause()
+  }, [isPlaying])
+
+  useEffect(() => {
+    const { song } = currentMusic
+    if (song) {
+      audioRef.current.src = `${song.preview}`
       audioRef.current.play()
     }
+  }, [currentMusic])
+
+
+  const handleClick = () => {
     setIsPlaying(!isPlaying)
   }
 
@@ -23,7 +32,12 @@ const Player = () => {
     <div className="bg-sky-700 w-full p-3 flex justify-center gap-5 bottom-14 fixed">
       <RiArrowLeftDoubleFill className='text-3xl' />
       <button onClick={handleClick}>
-        {isPlaying ? <RiPauseCircleFill className='text-3xl' /> : <RiPlayCircleFill className='text-3xl' />}
+        {
+          isPlaying ?
+            <RiPauseCircleFill className='text-3xl' />
+            :
+            <RiPlayCircleFill className='text-3xl' />
+        }
       </button>
       <RiArrowRightDoubleLine className='text-3xl' />
       <audio ref={audioRef} />
