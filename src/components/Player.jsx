@@ -29,7 +29,7 @@ const CurrentSong = (props) => {
 const Player = () => {
   const { currentMusic, isPlaying, setIsPlaying } = usePlayerStore(state => state)
   const audioRef = useRef()
-  const [volume, setVolume] = useState(100); // Initial volume
+  const [volume, setVolume] = useState(100); 
 
   useEffect(() => {
     isPlaying
