@@ -5,6 +5,7 @@ import { RiArrowRightDoubleLine } from "react-icons/ri";
 import { RiPauseCircleFill } from "react-icons/ri";
 import { usePlayerStore } from "../hooks/playerStore";
 import InputSlider from "./Slider";
+import Slider from '@mui/material/Slider';
 
 const CurrentSong = (props) => {
   return (
@@ -50,11 +51,15 @@ const Player = () => {
     setIsPlaying(!isPlaying)
   }
 
-
-  const handleVolumeChange = (newVolume) => {
+  const handleVolumeChange = (event, newVolume) => {
     setVolume(newVolume);
     audioRef.current.volume = newVolume / 100;
   }
+
+  // const handleVolumeChange = (newVolume) => {
+  //   setVolume(newVolume);
+  //   audioRef.current.volume = newVolume / 100;
+  // }
 
   return (
 
@@ -82,7 +87,11 @@ const Player = () => {
         </div>
       </div>
 
-      <InputSlider value={volume} onChange={handleVolumeChange} />
+      <Slider value={volume}
+        onChange={handleVolumeChange}
+        aria-label="Volume"
+        valueLabelDisplay="auto"
+        color="secondary" />
     </div>
 
   )
