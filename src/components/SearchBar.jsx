@@ -1,7 +1,9 @@
-import { useFetch } from "../hooks/useFetch"
-
-const SearchBar = () => {
- 
+const SearchBar = ({ ...props }) => {
+	return (
+		<input
+			{...props}
+		/>
+	)
 }
 
 export default SearchBar
