@@ -6,6 +6,7 @@ import { RiPauseCircleFill } from "react-icons/ri";
 import { RiAddCircleLine } from "react-icons/ri";
 import { usePlayerStore } from "../hooks/playerStore";
 import InputSlider from "./Slider";
+import AddToList from "./AddToList";
 
 const CurrentSong = (props) => {
   return (
@@ -85,7 +86,7 @@ const Player = () => {
 
   useEffect(() => {
     const { song } = currentMusic
-    console.log(song)
+    
     if (song) {
       audioRef.current.src = `${song.preview}`
       audioRef.current.play()
@@ -111,8 +112,8 @@ const Player = () => {
 
 
         <div className="flex items-center text-[#f0f9fe]">
-          <RiAddCircleLine className='text-3xl cursor-pointer' />
-          
+          <AddToList />
+
           <RiArrowLeftDoubleFill className='text-3xl' />
           <button onClick={handleClick}>
             {
