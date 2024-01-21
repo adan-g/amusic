@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PlayButton from "./PlayButton";
 import SearchBar from "./SearchBar";
+import {formatTime} from '../utils/helperFunctions.js'
 
 const Search = () => {
   const [search, setSearch] = useState('')
@@ -21,21 +22,14 @@ const Search = () => {
       .then((response) => response.json())
       .then((data) => setData(data.data))
   }, [search])
+  
 
   //search function
   const searcher = (e) => {
     setSearch(e.target.value)
   }
 
-  const formatTime = time => {
-    if (time == null) return `0:00`
-
-    const seconds = Math.floor(time % 60)
-    const minutes = Math.floor(time / 60)
-
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-  }
-
+  
   return (
     <div>
       <SearchBar
@@ -47,7 +41,7 @@ const Search = () => {
       />
 
 
-      <div className='mb-14 mt-10'>
+      <div className='mb-36 mt-10'>
         {
           data?.map((song) => (
             <a

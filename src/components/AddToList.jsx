@@ -1,4 +1,3 @@
-import { getPlayList } from '../api/getInfoPlayList.api'
 import { RiAddCircleLine } from "react-icons/ri";
 import { usePlayerStore } from "../hooks/playerStore";
 import { addSong } from '../api/getInfoPlayList.api';
@@ -6,11 +5,14 @@ import { addSong } from '../api/getInfoPlayList.api';
 
 const AddToList = () => {
   const { currentMusic } = usePlayerStore(state => state)
-
+  
   const addToList = async () => {
+
     const song = {
-      "title": 'demon',
-      "singer": 'Imagine Dragons'
+      "id_user": 1,
+      "id_music": currentMusic.song.id,
+      "singer_name": currentMusic.song.artist.name,
+      "song_name": currentMusic.song.title
     }
 
     try {

@@ -1,31 +1,89 @@
-import { getPlayList } from '../api/getInfoPlayList.api'
 import { useEffect, useState } from 'react'
+import { getPlayList } from '../api/getInfoPlayList.api'
+import {formatTime} from '../utils/helperFunctions.js'
+import PlayButton from "./PlayButton";
 
 const PlayList = () => {
   const [list, setList] = useState([])
+  const [music, setMusic] = useState(null)
 
   useEffect(() => {
-    async function loadPlayList() {
-      const res = await getPlayList()
-      setList(res.data)
+    const loadPlayList = async () => {
+      try {
+        const res = await getPlayList();
+        setList(res.data);
+      } catch (error) {
+        console.error('Error loading playlist:', error);
+      }
+    };
+
+    loadPlayList();
+  }, []);
+
+
+  const urlweb = 'https://deezerdevs-deezer.p.rapidapi.com/track/'
+
+  const fetchMusicData = async (idMusic) => {
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': import.meta.env.VITE_RAPIDAPI_KEY,
+        'X-RapidAPI-Host': import.meta.env.VITE_RAPIDAPI_HOST,
+      },
+    };
+
+    try {
+      const response = await fetch(`${urlweb}${idMusic}`, options);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return null;
     }
-    
-    loadPlayList()
-  }, [])
-  
+  };
+
+
+  useEffect(() => {
+    const fetchMusicDataForList = async () => {
+      const musicPromises = list.map((item) => fetchMusicData(item.id_music));
+      const musicData = await Promise.all(musicPromises);
+      setMusic(musicData);
+    };
+
+    fetchMusicDataForList();
+  }, [list]);
+
+
+  // /console.log(music)
+
   return (
     <div className=''>
       <input className='w-full top-0 fixed p-2' type="text" placeholder='Search music in my list' />
 
-      <div className='mb-14 mt-10'>
-        {list.map(list => (
-          <a key={list.id} className='flex p-2 bg-slate-600 gap-5 items-center'>
-            <picture className='h-12 w-12 block'>
-              <img src={list.singer_name} className='object-cover w-full h-full' />
-            </picture>
-            <p>{list.singer_name}</p>
-          </a>
-        ))}
+      <div className='mb-36 mt-10'>
+
+
+        {
+          music?.map((song) => (
+            <a
+              key={song.id}
+              className="flex items-center justify-between p-2 cursor-pointer text-[#f0f9fe]"
+            >
+              <div className="flex items-center gap-5">
+                <img src={song.album.cover_small} alt={song.title} />
+                <div className="flex flex-col">
+                  <p className="text-sm">{song.title}</p>
+                  <p className="text-xs text-[#43aaee]">{song.artist.name}</p>
+                  <p className="text-xs text-[#43aaee]">{formatTime(song.duration)}</p>
+                </div>
+              </div>
+
+              <div>
+                <PlayButton id={song.id} />
+              </div>
+            </a>
+          ))
+        }
       </div>
     </div>
   )
