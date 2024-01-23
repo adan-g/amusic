@@ -10,9 +10,7 @@ const AddToList = () => {
 
     const song = {
       "id_user": 1,
-      "id_music": currentMusic.song.id,
-      "singer_name": currentMusic.song.artist.name,
-      "song_name": currentMusic.song.title
+      "id_music_deezer": currentMusic.song.id
     }
 
     try {

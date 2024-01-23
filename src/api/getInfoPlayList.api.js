@@ -17,3 +17,4 @@ const createAxiosInstance = () => {
 // Exporting functions for API requests
 export const getPlayList = () => createAxiosInstance().get('/');
 export const addSong = (song) => createAxiosInstance().post('/', song);
+export const deleteSong = (id) => createAxiosInstance().delete(`/${id}`);
