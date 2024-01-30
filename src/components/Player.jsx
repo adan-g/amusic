@@ -3,7 +3,6 @@ import { RiPlayCircleFill } from "react-icons/ri";
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 import { RiArrowRightDoubleLine } from "react-icons/ri";
 import { RiPauseCircleFill } from "react-icons/ri";
-import { RiAddCircleLine } from "react-icons/ri";
 import { usePlayerStore } from "../hooks/playerStore";
 import InputSlider from "./Slider";
 import AddToList from "./AddToList";
@@ -59,7 +58,7 @@ const SongControl = ({ audio }) => {
       <span className="text-[#f0f9fe]">{formatTime(currentTime)}</span>
       <InputSlider
         value={currentTime}
-        max={audio?.current?.duration ?? 0}
+        max={duration ? duration : 0}
         min={0}
         onChange={(value) => {
           const newCurrentTime = value.target.value
@@ -76,8 +75,7 @@ const SongControl = ({ audio }) => {
 const Player = () => {
   const { currentMusic, isPlaying, setIsPlaying } = usePlayerStore(state => state)
   const audioRef = useRef()
-  const [volume, setVolume] = useState(100);
-
+  
   useEffect(() => {
     isPlaying
       ? audioRef.current.play()
@@ -86,11 +84,16 @@ const Player = () => {
 
   useEffect(() => {
     const { song } = currentMusic
-    
+
     if (song) {
-      audioRef.current.src = `${song.preview}`
-      audioRef.current.play()
+      fetch(song.preview)
+      .then(response => response.blob())
+      .then(blob => {
+        audioRef.current.src = URL.createObjectURL(blob);
+        return audioRef.current.play();
+      })
     }
+
   }, [currentMusic])
 
   const handleClick = () => {
@@ -110,9 +113,8 @@ const Player = () => {
 
         <audio ref={audioRef} />
 
-
         <div className="flex items-center text-[#f0f9fe]">
-          <AddToList />
+          <AddToList id={currentMusic.song?.idLocal} />
 
           <RiArrowLeftDoubleFill className='text-3xl' />
           <button onClick={handleClick}>

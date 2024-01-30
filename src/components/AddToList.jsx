@@ -1,13 +1,39 @@
-import { RiAddCircleLine } from "react-icons/ri";
+import { useEffect, useState } from "react";
 import { usePlayerStore } from "../hooks/playerStore";
-import { addSong } from '../api/getInfoPlayList.api';
-
+import { RiAddFill } from "react-icons/ri";
+import { addSong, getPlayList } from '../api/getInfoPlayList.api';
+import { RiListCheck3 } from "react-icons/ri";
 
 const AddToList = () => {
-  const { currentMusic } = usePlayerStore(state => state)
-  
-  const addToList = async () => {
+  const { currentMusic, playListModified } = usePlayerStore(state => state)
+  const [isListed, setIsListed] = useState(false)
+  const [playList, setPlayList] = useState([])
 
+  useEffect(() => {
+    const loadPlayList = async () => {
+      try {
+        const res = await getPlayList();
+       
+        if (res.data) {
+          setPlayList({ playList: res.data })
+        }
+        
+      } catch (error) {
+        console.error('Error loading playlist:', error);
+      }
+    };
+    loadPlayList();
+  }, [currentMusic, playListModified]);
+  console.log(currentMusic)
+
+  useEffect(() => {
+    const isListed = playList.playList?.map((item) => (item.id_music_deezer)).includes(currentMusic.song?.id);
+
+    setIsListed(isListed)
+  }, [playList]);
+
+
+  const addToList = async () => {
     const song = {
       "id_user": 1,
       "id_music_deezer": currentMusic.song.id
@@ -15,19 +41,28 @@ const AddToList = () => {
 
     try {
       const res = await addSong(song);
-      console.log(res);
+      if (res.status == 201) {
+        setIsListed(true);
+        alert('muisca added')
+      }
     } catch (error) {
       console.error(error);
     }
   }
 
   return (
-    <div>
-      <RiAddCircleLine
-        onClick={addToList}
-        className='text-3xl cursor-pointer'
-      />
-    </div>
+    <button>
+      {isListed ? (
+        <RiListCheck3
+          className='text-3xl cursor-pointer'
+        />
+      ) : (
+        <RiAddFill
+          className='text-3xl cursor-pointer'
+          onClick={addToList}
+        />
+      )}
+    </button>
   )
 }
 

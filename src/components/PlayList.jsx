@@ -3,17 +3,25 @@ import { getPlayList } from '../api/getInfoPlayList.api'
 import { formatTime } from '../utils/helperFunctions.js'
 import PlayButton from "./PlayButton";
 import DeleteButton from './DeleteButton.jsx';
+import { usePlayerStore } from "../hooks/playerStore";
 
 const PlayList = () => {
+  const {
+    setPlayList, playListModified, setPlayListModified
+  } = usePlayerStore(state => state)
   const [list, setList] = useState([])
   const [music, setMusic] = useState(null)
+  
 
   useEffect(() => {
     const loadPlayList = async () => {
       try {
         const res = await getPlayList();
-        if (!(res.data == 0)) {
+
+        if (res.data) {
           setList(res.data);
+          setPlayList({ playList: res.data })
+          setPlayListModified(false)
         }
         
       } catch (error) {
@@ -22,7 +30,7 @@ const PlayList = () => {
     };
 
     loadPlayList();
-  }, []);
+  }, [playListModified]);
 
   const urlweb = 'https://deezerdevs-deezer.p.rapidapi.com/track/'
 
@@ -52,7 +60,7 @@ const PlayList = () => {
       const musicData = await Promise.all(musicPromises);
       
       //check reponse good and with data
-      if (!(musicData == 0)) {
+      if (musicData) {
         setMusic(musicData);
       }
     };
