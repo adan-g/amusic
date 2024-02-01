@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { usePlayerStore } from "../hooks/playerStore";
-import { RiAddFill } from "react-icons/ri";
 import { addSong, getPlayList } from '../api/getInfoPlayList.api';
-import { RiListCheck3 } from "react-icons/ri";
+import { RiAddFill } from "react-icons/ri";
+import { RiPlayList2Fill } from "react-icons/ri";
 
 const AddToList = () => {
-  const { currentMusic, playListModified } = usePlayerStore(state => state)
+  const { currentMusic, playListModified, playList, setPlayList } = usePlayerStore(state => state)
   const [isListed, setIsListed] = useState(false)
-  const [playList, setPlayList] = useState([])
 
   useEffect(() => {
     const loadPlayList = async () => {
@@ -15,7 +14,7 @@ const AddToList = () => {
         const res = await getPlayList();
        
         if (res.data) {
-          setPlayList({ playList: res.data })
+          setPlayList(res.data)
         }
         
       } catch (error) {
@@ -23,8 +22,8 @@ const AddToList = () => {
       }
     };
     loadPlayList();
-  }, [currentMusic, playListModified]);
-  console.log(currentMusic)
+  }, [currentMusic, playListModified, isListed]);
+  
 
   useEffect(() => {
     const isListed = playList.playList?.map((item) => (item.id_music_deezer)).includes(currentMusic.song?.id);
@@ -53,7 +52,7 @@ const AddToList = () => {
   return (
     <button>
       {isListed ? (
-        <RiListCheck3
+        <RiPlayList2Fill
           className='text-3xl cursor-pointer'
         />
       ) : (

@@ -1,4 +1,4 @@
-const fetchMusicData = async (urlweb, idMusic) => {
+export async function fetchMusicData(idMusic) {
 	const options = {
 		method: 'GET',
 		headers: {
@@ -6,6 +6,8 @@ const fetchMusicData = async (urlweb, idMusic) => {
 			'X-RapidAPI-Host': import.meta.env.VITE_RAPIDAPI_HOST,
 		},
 	};
+
+	const urlweb = 'https://deezerdevs-deezer.p.rapidapi.com/track/'
 
 	try {
 		const response = await fetch(`${urlweb}${idMusic}`, options);
@@ -15,7 +17,4 @@ const fetchMusicData = async (urlweb, idMusic) => {
 		console.error('Error fetching data:', error);
 		return null;
 	}
-};
-
-
-export default fetchMusicData
+}

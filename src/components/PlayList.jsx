@@ -4,26 +4,32 @@ import { formatTime } from '../utils/helperFunctions.js'
 import PlayButton from "./PlayButton";
 import DeleteButton from './DeleteButton.jsx';
 import { usePlayerStore } from "../hooks/playerStore";
+import SearchBar from "./SearchBar";
+
 
 const PlayList = () => {
   const {
-    setPlayList, playListModified, setPlayListModified
+    setPlayList,
+    playListModified,
+    setPlayListModified
   } = usePlayerStore(state => state)
-  const [list, setList] = useState([])
-  const [music, setMusic] = useState(null)
-  
+  const [listLocal, setListLocal] = useState([])
+  const [listFromApi, setListFromApi] = useState(null)
+  const [search, setSearch] = useState('')
 
+
+  //get playList db local
   useEffect(() => {
     const loadPlayList = async () => {
       try {
         const res = await getPlayList();
 
         if (res.data) {
-          setList(res.data);
-          setPlayList({ playList: res.data })
+          setPlayList(res.data)
+          setListLocal(res.data);
           setPlayListModified(false)
         }
-        
+
       } catch (error) {
         console.error('Error loading playlist:', error);
       }
@@ -32,8 +38,8 @@ const PlayList = () => {
     loadPlayList();
   }, [playListModified]);
 
+  //fetch API
   const urlweb = 'https://deezerdevs-deezer.p.rapidapi.com/track/'
-
   const fetchMusicData = async (idMusicDeezer, idLocal) => {
     const options = {
       method: 'GET',
@@ -53,35 +59,56 @@ const PlayList = () => {
     }
   };
 
-
+  //execute if listLocal change
   useEffect(() => {
     const fetchMusicDataForList = async () => {
-      const musicPromises = list.map((item) => fetchMusicData(item.id_music_deezer, item.id));
+      const musicPromises = listLocal.map((item) => fetchMusicData(item.id_music_deezer, item.id));
       const musicData = await Promise.all(musicPromises);
-      
+
       //check reponse good and with data
       if (musicData) {
-        setMusic(musicData);
+        setListFromApi(musicData);
       }
     };
 
     fetchMusicDataForList();
-  }, [list]);
+  }, [listLocal]);
 
-  //console.log(music)
+  
+  const searcher = (e) => {
+    setSearch(e.target.value)
+  }
+
+  let result = listFromApi
+  if (search) {
+    result = listFromApi.filter((song) =>
+      song.title.toLowerCase().includes(search.toLocaleLowerCase())
+    )
+  }
 
   return (
     <div className=''>
-      <input className='w-full top-0 fixed p-2' type="text" placeholder='Search music in my list' />
+      <SearchBar
+        value={search}
+        onChange={searcher}
+        className='w-full top-0 fixed p-2'
+        type="text"
+        placeholder='Search music'
+      />
+
 
       <div className='mb-36 mt-10'>
         {
-          music
+          result
             ?
-            music?.map((song) => (
+            result?.map((song) => (
               <a
                 key={song.idLocal}
-                className="flex items-center justify-between p-2 cursor-pointer text-[#f0f9fe]"
+                className="flex 
+                items-center 
+                justify-between 
+                p-2 
+                cursor-pointer text-[#f0f9fe] hover:bg-sky-800"
               >
                 <div className="flex items-center gap-5">
                   <img src={song.album.cover_small} alt={song.title} />

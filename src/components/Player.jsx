@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { RiPlayCircleFill } from "react-icons/ri";
-import { RiArrowLeftDoubleFill } from "react-icons/ri";
-import { RiArrowRightDoubleLine } from "react-icons/ri";
 import { RiPauseCircleFill } from "react-icons/ri";
 import { usePlayerStore } from "../hooks/playerStore";
 import InputSlider from "./Slider";
 import AddToList from "./AddToList";
+import { fetchMusicData } from "../hooks/useFetch";
+import { SkipToNext, SkipBack } from "./SkipButton";
+
 
 const CurrentSong = (props) => {
   return (
@@ -72,10 +73,13 @@ const SongControl = ({ audio }) => {
   )
 }
 
+
+
+
 const Player = () => {
-  const { currentMusic, isPlaying, setIsPlaying } = usePlayerStore(state => state)
+  const { currentMusic, setCurrentMusic, isPlaying, setIsPlaying, playList } = usePlayerStore(state => state)
   const audioRef = useRef()
-  
+
   useEffect(() => {
     isPlaying
       ? audioRef.current.play()
@@ -87,11 +91,11 @@ const Player = () => {
 
     if (song) {
       fetch(song.preview)
-      .then(response => response.blob())
-      .then(blob => {
-        audioRef.current.src = URL.createObjectURL(blob);
-        return audioRef.current.play();
-      })
+        .then(response => response.blob())
+        .then(blob => {
+          audioRef.current.src = URL.createObjectURL(blob);
+          return audioRef.current.play();
+        })
     }
 
   }, [currentMusic])
@@ -100,6 +104,27 @@ const Player = () => {
     setIsPlaying(!isPlaying)
   }
 
+  const skipBack = async () => {
+    const index = playList.findIndex(x => x.id_music_deezer == currentMusic.song.id)
+    if (index == 0) {
+      const data = await fetchMusicData(playList[playList.length - 1].id_music_deezer)
+      setCurrentMusic({ song: data })
+    } else {
+      const data = await fetchMusicData(playList[index - 1].id_music_deezer)
+      setCurrentMusic({ song: data })
+    }
+  }
+
+  const skipToNext = async () => {
+    const index = playList.findIndex(x => x.id_music_deezer == currentMusic.song.id)
+    if (index == playList.length - 1) {
+      const data = await fetchMusicData(playList[0].id_music_deezer)
+      setCurrentMusic({ song: data })
+    } else {
+      const data = await fetchMusicData(playList[index + 1].id_music_deezer)
+      setCurrentMusic({ song: data })
+    }
+  }
 
   return (
 
@@ -116,7 +141,11 @@ const Player = () => {
         <div className="flex items-center text-[#f0f9fe]">
           <AddToList id={currentMusic.song?.idLocal} />
 
-          <RiArrowLeftDoubleFill className='text-3xl' />
+          <SkipBack
+            className='text-3xl'
+            onClick={skipBack}
+          />
+
           <button onClick={handleClick}>
             {
               isPlaying ?
@@ -125,7 +154,10 @@ const Player = () => {
                 <RiPlayCircleFill className='text-3xl' />
             }
           </button>
-          <RiArrowRightDoubleLine className='text-3xl' />
+          <SkipToNext
+            className='text-3xl'
+            onClick={skipToNext}
+          />
         </div>
       </div>
 

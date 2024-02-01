@@ -46,7 +46,7 @@ const Search = () => {
           data?.map((song) => (
             <a
               key={song.id}
-              className="flex items-center justify-between p-2 cursor-pointer text-[#f0f9fe]"
+              className="flex items-center justify-between p-2 cursor-pointer text-[#f0f9fe] hover:bg-sky-800"
             >
               <div className="flex items-center gap-5">
                 <img src={song.album.cover_small} alt={song.title} />

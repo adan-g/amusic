@@ -1,4 +1,4 @@
-import { RiDeleteBin2Line } from "react-icons/ri";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 import { deleteSong } from '../api/getInfoPlayList.api';
 import { usePlayerStore } from "../hooks/playerStore";
 
@@ -22,7 +22,7 @@ const DeleteButton = ({ id }) => {
 
 	return (
 		<button onClick={btnDelete}>
-			<RiDeleteBin2Line className='text-2xl' />
+			<RiDeleteBin2Fill className='text-2xl' />
 		</button>
 	)
 }
