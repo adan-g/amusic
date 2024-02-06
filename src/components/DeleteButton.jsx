@@ -4,17 +4,17 @@ import { usePlayerStore } from "../hooks/playerStore";
 
 const DeleteButton = ({ id }) => {
 	const {
-    setPlayListModified
-  } = usePlayerStore(state => state)
+		setPlayListModified,
+		setAlertMsg
+	} = usePlayerStore(state => state)
 
 	const btnDelete = async () => {
 		try {
 			const res = await deleteSong(id);
-			console.log(res)
 			if (res.status == 204) {
-        alert('music deleted')		
-				setPlayListModified(true)		
-      }
+				setAlertMsg({ type: `success`, message: `Music removed!` })
+				setPlayListModified(true)
+			}
 		} catch (error) {
 			console.error(error);
 		}

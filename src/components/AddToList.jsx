@@ -5,29 +5,28 @@ import { RiAddFill } from "react-icons/ri";
 import { RiPlayList2Fill } from "react-icons/ri";
 
 const AddToList = () => {
-  const { currentMusic, playListModified, playList, setPlayList } = usePlayerStore(state => state)
+  const { currentMusic, playListModified, playList, setPlayList, setAlertMsg } = usePlayerStore(state => state)
   const [isListed, setIsListed] = useState(false)
 
   useEffect(() => {
     const loadPlayList = async () => {
       try {
         const res = await getPlayList();
-       
+
         if (res.data) {
           setPlayList(res.data)
         }
-        
+
       } catch (error) {
         console.error('Error loading playlist:', error);
       }
     };
     loadPlayList();
   }, [currentMusic, playListModified, isListed]);
-  
+
 
   useEffect(() => {
-    const isListed = playList.playList?.map((item) => (item.id_music_deezer)).includes(currentMusic.song?.id);
-
+    const isListed = playList?.map((item) => (item.id_music_deezer)).includes(currentMusic.song?.id);
     setIsListed(isListed)
   }, [playList]);
 
@@ -42,7 +41,7 @@ const AddToList = () => {
       const res = await addSong(song);
       if (res.status == 201) {
         setIsListed(true);
-        alert('muisca added')
+        setAlertMsg({type: `success`, message: `Music added to your playlist!`})
       }
     } catch (error) {
       console.error(error);

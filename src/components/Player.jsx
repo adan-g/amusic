@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { RiPlayCircleFill } from "react-icons/ri";
-import { RiPauseCircleFill } from "react-icons/ri";
+import { RiPauseCircleFill, RiVolumeUpFill, RiVolumeMuteFill } from "react-icons/ri";
 import { usePlayerStore } from "../hooks/playerStore";
 import InputSlider from "./Slider";
 import AddToList from "./AddToList";
 import { fetchMusicData } from "../hooks/useFetch";
 import { SkipToNext, SkipBack } from "./SkipButton";
+
 
 
 const CurrentSong = (props) => {
@@ -58,6 +59,7 @@ const SongControl = ({ audio }) => {
     <div className="w-full flex gap-x-3 text-xs items-center">
       <span className="text-[#f0f9fe]">{formatTime(currentTime)}</span>
       <InputSlider
+        className='w-full'
         value={currentTime}
         max={duration ? duration : 0}
         min={0}
@@ -73,11 +75,30 @@ const SongControl = ({ audio }) => {
   )
 }
 
+const VolumeControl = () => {
+  const volume = usePlayerStore(state => state.volume)
+  const setVolume = usePlayerStore(state => state.setVolume)
 
+  return (
+    <div className="flex items-center gap-3">
+      {volume < 0.1 ? <RiVolumeMuteFill /> : <RiVolumeUpFill />}
+
+      <InputSlider
+        className='flex w-32 items-center mr-5'
+        defaultValue={100}
+        max={100}
+        min={0}
+        onChange={(value) => {
+          setVolume(value.target.value / 100);
+        }}
+      />
+    </div>
+  )
+}
 
 
 const Player = () => {
-  const { currentMusic, setCurrentMusic, isPlaying, setIsPlaying, playList } = usePlayerStore(state => state)
+  const { currentMusic, setCurrentMusic, isPlaying, setIsPlaying, playList, volume } = usePlayerStore(state => state)
   const audioRef = useRef()
 
   useEffect(() => {
@@ -87,6 +108,10 @@ const Player = () => {
   }, [isPlaying])
 
   useEffect(() => {
+    audioRef.current.volume = volume
+  }, [volume])
+
+  useEffect(() => {
     const { song } = currentMusic
 
     if (song) {
@@ -94,6 +119,7 @@ const Player = () => {
         .then(response => response.blob())
         .then(blob => {
           audioRef.current.src = URL.createObjectURL(blob);
+          audioRef.current.volume = volume
           return audioRef.current.play();
         })
     }
@@ -135,10 +161,12 @@ const Player = () => {
           title={currentMusic.song?.title}
           artist={currentMusic.song?.artist.name}
         />
+        
+        
 
-        <audio ref={audioRef} />
+        <div className="flex items-center text-[#f0f9fe] gap-1">
+          <VolumeControl />
 
-        <div className="flex items-center text-[#f0f9fe]">
           <AddToList id={currentMusic.song?.idLocal} />
 
           <SkipBack
@@ -154,6 +182,7 @@ const Player = () => {
                 <RiPlayCircleFill className='text-3xl' />
             }
           </button>
+
           <SkipToNext
             className='text-3xl'
             onClick={skipToNext}
@@ -162,16 +191,7 @@ const Player = () => {
       </div>
 
       <SongControl audio={audioRef} />
-
-      {/* <InputSlider
-        defaultValue={100}
-        max={100}
-        min={0}
-        onChange={(value) => {
-          setVolume(value.target.value);
-          audioRef.current.volume = value.target.value / 100;
-        }}
-      /> */}
+      <audio ref={audioRef} />
     </div>
 
   )

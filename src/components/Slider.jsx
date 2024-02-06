@@ -3,21 +3,22 @@ import Slider from '@mui/material/Slider';
 
 
 
-export default function InputSlider({ ...props }) {
+export default function InputSlider({ className, ...props }) {
+
   return (
-    
-    <Slider
-    
-      sx={{
-        color: '#f0f9fe', // Replace 'your_color_here' with the desired color
-        '& .MuiSlider-rail': {
-          backgroundColor: '#f0f9fe', // Replace 'rail_color_here' with the desired rail color
-        },
-        '& .MuiSlider-thumb': {
-          backgroundColor: '#f0f9fe', // Replace 'thumb_color_here' with the desired thumb color
-        },
-      }}
-      {...props}
-    />
+    <div className={className}>
+      <Slider
+        sx={{
+          color: '#f0f9fe',
+          '& .MuiSlider-rail': {
+            backgroundColor: '#f0f9fe',
+          },
+          '& .MuiSlider-thumb': {
+            backgroundColor: '#f0f9fe',
+          },
+        }}
+        {...props}
+      />
+    </div>
   );
 }
